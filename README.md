@@ -32,6 +32,8 @@ Note: Concurrent Pandas is not associated with Quandl or Python Pandas, it just 
   - More coming soon!
 - **Data is returned in a hashmap for fast lookups** ( *O(1) average case* )
   - Hash Map Keys are the strings entered for lookup, buckets contain your Panda data frame
+
+
 ---
 ####Easy to use
 ```
