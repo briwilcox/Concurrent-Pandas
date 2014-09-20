@@ -12,7 +12,7 @@ Note: Concurrent Pandas is not associated with Quandl or Python Pandas, it just 
 ---
 ####Features
 
-
+- **Working in Python 2 and 3**
 - **Sequential Downloading of Keys**
 - **Concurrent downloading of keys using thread or process pools**
 - **All Concurrent Downloading will automatically pick an optimal number of threads or processes to use for your system**
@@ -59,6 +59,8 @@ Coming soon!
 
 ---
 #####Misc
+
+Tested on Python 2.7.6 and Python 3.4.0 
 
 To see what else I'm building or follow / contact me check out my [github][1], [twitter][3], and my [personal site][2]. 
 
