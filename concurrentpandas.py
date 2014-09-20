@@ -1,14 +1,34 @@
-__author__ = 'brian wilcox'
+__author__ = 'Brian M Wilcox'
+
+"""
+
+
+    Copyright 2014 Brian M Wilcox
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+
+    You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+
+"""
+
 import Quandl
 import collections
 import time
 import sys
 import pandas.io.data
-from random import randrange
 import multiprocessing
 from multiprocessing import Process, Manager
 from multiprocessing.pool import ThreadPool
-
+from random import randrange
 
 def data_worker(**kwargs):
     """
@@ -54,15 +74,16 @@ def data_worker(**kwargs):
 
 
 def get_data(data_get, data_key, output_map, retries_left, argdict):
+        """
+        Function to use Python Pandas and / or Quandl to download a dataframe
+        Insert resulting dataframe into output map
+        """
         if retries_left <= 0:
             print(data_key + " Failed to download.")
             return
         if "Quandl" in data_get.__module__:
-            #try:
-                output_map[data_key] = data_get(data_key, authtoken=argdict["quandl_token"])
-                return
-            #except:
-            #    print(data_key + " failed to download. Retrying up to " + retries_left.__str__() + " more times...")
+            output_map[data_key] = data_get(data_key, authtoken=argdict["quandl_token"])
+            return
 
         if "pandas.io.data" in data_get.__module__:
             if ("source" and "begin" and "end") in argdict:
@@ -232,3 +253,5 @@ class ConcurrentPandas:
         self.worker_args = {"function": pandas.io.data.DataReader, "input": self.input_queue, "output": self.output_map,
                             "source": 'fred'}
         self.source_name = "Federal Reserve Economic Data"
+
+
