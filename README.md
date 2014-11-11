@@ -56,7 +56,7 @@ print(mymap["aapl"].head)
 ---
 #####Installation Instructions
 
-Not : only tested on Linux
+Note : only tested on Linux
 
 To install execute:
 
