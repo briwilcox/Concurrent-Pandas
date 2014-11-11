@@ -55,7 +55,11 @@ print(mymap["aapl"].head)
 
 ---
 #####Installation Instructions
-Coming soon!
+
+Note* Only tested on Linux
+
+To install execute:
+pip install ConcurrentPandas
 
 ---
 #####Misc
