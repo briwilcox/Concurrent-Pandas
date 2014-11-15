@@ -1,4 +1,5 @@
 __author__ = 'Brian M Wilcox'
+__version__ = '0.11'
 
 """
 

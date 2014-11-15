@@ -10,7 +10,7 @@ def read(*paths):
 
 setup(
     name='ConcurrentPandas',
-    version='0.1.0',
+    version='0.1.1',
     description='Download data using pandas with multi-threading and multi-processing.',
     long_description=(read('README.md') + '\n\n' +
                       read('AUTHORS.rst')) + '\n\n',
