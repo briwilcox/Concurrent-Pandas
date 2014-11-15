@@ -1,5 +1,5 @@
 __author__ = 'Brian M Wilcox'
-__version__ = '0.11'
+__version__ = '0.1.1'
 
 """
 
@@ -100,8 +100,9 @@ def get_data(data_get, data_key, output_map, retries_left, argdict):
                 except:
                     print(data_key + " failed to download. Retrying up to " + retries_left.__str__() + " more times...")
 
-        # TODO : Replace this with a formula
-        # Progressively decrease request speed due to failures
+        """
+        Retry at random times progressively slower in case of failures when number of retries remaining gets low
+        """
         if (retries_left == 3):
             time.sleep(randrange(0, 4))
         if (retries_left == 2):
