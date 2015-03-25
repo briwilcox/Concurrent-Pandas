@@ -64,6 +64,15 @@ To install execute:
 pip install ConcurrentPandas
 ```
 
+
+---
+#####Updates
+
+New in 0.1.2
+Ability to interact with stock options
+
+Now requires BeautifulSoup4, and Pandas 0.16 or newer.
+
 ---
 #####Misc
 

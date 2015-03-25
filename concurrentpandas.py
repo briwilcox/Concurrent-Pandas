@@ -1,5 +1,5 @@
 __author__ = 'Brian M Wilcox'
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 """
 
@@ -26,6 +26,7 @@ import collections
 import time
 import sys
 import pandas.io.data
+from pandas.io.data import Options
 import multiprocessing
 from multiprocessing import Process, Manager
 from multiprocessing.pool import ThreadPool
@@ -82,23 +83,40 @@ def get_data(data_get, data_key, output_map, retries_left, argdict):
         if retries_left <= 0:
             print(data_key + " Failed to download.")
             return
+
+        """
+        Identify type of function to use, insert result into output map
+        """
         if "Quandl" in data_get.__module__:
             output_map[data_key] = data_get(data_key, authtoken=argdict["quandl_token"])
             return
 
         if "pandas.io.data" in data_get.__module__:
-            if ("source" and "begin" and "end") in argdict:
+            # Verify we are not dealing with options
+            if 'get_call_data' not in dir(data_get):
+                if ("source" and "begin" and "end") in argdict:
+                    try:
+                        output_map[data_key] = data_get(data_key, argdict["data_source"], argdict["begin"], argdict["end"])
+                        return
+                    except:
+                        print(data_key + " failed to download. Retrying up to " + retries_left.__str__() + " more times...")
+                else:
+                    try:
+                        output_map[data_key] = data_get(data_key, argdict["data_source"])
+                        return
+                    except:
+                        print(data_key + " failed to download. Retrying up to " + retries_left.__str__() + " more times...")
+            # Verify we are dealing with options
+            if 'get_call_data' in dir(data_get):
                 try:
-                    output_map[data_key] = data_get(data_key, argdict["data_source"], argdict["begin"], argdict["end"])
+                    # Note options data will always be pulled from yahoo
+                    temp = data_get(data_key, 'yahoo')
+                    # For simplicities sake assume user wants all options data
+                    output_map[data_key] = temp.get_all_data()
                     return
                 except:
-                    print(data_key + " failed to download. Retrying up to " + retries_left.__str__() + " more times...")
-            else:
-                try:
-                    output_map[data_key] = data_get(data_key, argdict["data_source"])
-                    return
-                except:
-                    print(data_key + " failed to download. Retrying up to " + retries_left.__str__() + " more times...")
+                    print(data_key + " options failed to download. Retrying up to " + retries_left.__str__() + " more times...")
+                    print("WARNING: If your version of Pandas is not up to date this may fail!")
 
         """
         Retry at random times progressively slower in case of failures when number of retries remaining gets low
@@ -256,4 +274,11 @@ class ConcurrentPandas:
                             "source": 'fred'}
         self.source_name = "Federal Reserve Economic Data"
 
-
+    def set_source_yahoo_options(self):
+        """
+        Set data source to yahoo finance, specifically to download financial options data
+        """
+        self.data_worker = data_worker
+        self.worker_args = {"function": Options, "input": self.input_queue, "output": self.output_map,
+                            "source": 'yahoo'}
+        self.source_name = "Yahoo Finance Options"

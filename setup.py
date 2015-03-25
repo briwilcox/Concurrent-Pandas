@@ -48,7 +48,8 @@ setup(
     # installed or upgraded on the target machine
     install_requires = [
         'Quandl',
-        'pandas>=0.14.0'
+        'pandas>=0.16.0',
+        'BeautifulSoup4'
     ],
 
     package_data = {
