@@ -1,5 +1,5 @@
 __author__ = 'Brian M Wilcox'
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
 """
 
@@ -21,12 +21,12 @@ __version__ = '0.1.2'
 
 """
 
-import Quandl
+import quandl
 import collections
 import time
 import sys
-import pandas.io.data
-from pandas.io.data import Options
+import pandas_datareader
+from pandas_datareader import Options
 import multiprocessing
 from multiprocessing import Process, Manager
 from multiprocessing.pool import ThreadPool
@@ -59,12 +59,12 @@ def data_worker(**kwargs):
         if ("source" and "begin" and "end") in kwargs:
             argsdict = {"data_source": kwargs["source"], "begin": kwargs["begin"], "end": kwargs["end"]}
         else:
-            if "pandas.io.data" in function.__module__:
+            if "pandas_datareader" in function.__module__:
                 Exception("Invalid Arguments, no pandas data source specified")
         if ("source" in kwargs) and (("begin" and "end") not in kwargs):
             argsdict = {"data_source": kwargs["source"]}
         else:
-            if "pandas.io.data" in function.__module__:
+            if "pandas_datareader" in function.__module__:
                 Exception("Invalid Arguments, no pandas data source specified")
     else:
         Exception("Invalid Arguments")
@@ -91,7 +91,7 @@ def get_data(data_get, data_key, output_map, retries_left, argdict):
             output_map[data_key] = data_get(data_key, authtoken=argdict["quandl_token"])
             return
 
-        if "pandas.io.data" in data_get.__module__:
+        if "pandas_datareader" in data_get.__module__:
             # Verify we are not dealing with options
             if 'get_call_data' not in dir(data_get):
                 if ("source" and "begin" and "end") in argdict:
@@ -122,11 +122,11 @@ def get_data(data_get, data_key, output_map, retries_left, argdict):
         Retry at random times progressively slower in case of failures when number of retries remaining gets low
         """
         if (retries_left == 3):
-            time.sleep(randrange(0, 4))
+            time.sleep(randrange(0, 5))
         if (retries_left == 2):
-            time.sleep(randrange(2, 6))
-        if (retries_left == 1):
             time.sleep(randrange(5, 15))
+        if (retries_left == 1):
+            time.sleep(randrange(30, 90))
         get_data(data_get, data_key, output_map, (retries_left-1), argdict)
 
 
@@ -252,7 +252,7 @@ class ConcurrentPandas:
         Set data source to Yahoo Finance
         """
         self.data_worker = data_worker
-        self.worker_args = {"function": pandas.io.data.DataReader, "input": self.input_queue, "output": self.output_map,
+        self.worker_args = {"function": pandas_datareader.DataReader, "input": self.input_queue, "output": self.output_map,
                             "source": 'yahoo'}
         self.source_name = "Yahoo Finance"
 
@@ -261,7 +261,7 @@ class ConcurrentPandas:
         Set data source to Google Finance
         """
         self.data_worker = data_worker
-        self.worker_args = {"function": pandas.io.data.DataReader, "input": self.input_queue, "output": self.output_map,
+        self.worker_args = {"function": pandas_datareader.DataReader, "input": self.input_queue, "output": self.output_map,
                             "source": 'google'}
         self.source_name = "Google Finance"
 
@@ -270,7 +270,7 @@ class ConcurrentPandas:
         Set data source to Federal Reserve Economic Data
         """
         self.data_worker = data_worker
-        self.worker_args = {"function": pandas.io.data.DataReader, "input": self.input_queue, "output": self.output_map,
+        self.worker_args = {"function": pandas_datareader.DataReader, "input": self.input_queue, "output": self.output_map,
                             "source": 'fred'}
         self.source_name = "Federal Reserve Economic Data"
 
